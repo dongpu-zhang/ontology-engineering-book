@@ -37,10 +37,11 @@ class ManufacturingReasoner:
         推理后，本体中会新增推导出的知识（隐含三元组）
         """
         print("\n正在运行 Pellet 推理器...")
-        sync_reasoner_pellet(
-            infer_property_values=True,       # 推导属性值
-            infer_data_property_values=True   # 推导数据属性值
-        )
+        with self.onto:
+            sync_reasoner_pellet(
+                infer_property_values=True,       # 推导属性值
+                infer_data_property_values=True   # 推导数据属性值
+            )
         print("推理完成")
 
     def check_conflicts(self) -> List[Dict]:
@@ -107,11 +108,14 @@ class ManufacturingReasoner:
         recommendations = []
         if hasattr(product, 'recommendedProcess'):
             for proc in product.recommendedProcess:
-                confidence = getattr(proc, 'confidence', [0.8])[0]
+                confidence_vals = getattr(proc, 'confidence', [])
+                confidence = confidence_vals[0] if confidence_vals else 0.8
+                comment_vals = getattr(proc, 'comment', [])
+                description = str(comment_vals[0]) if comment_vals else ''
                 recommendations.append({
                     "name": proc.name,
                     "confidence": confidence,
-                    "description": getattr(proc, 'comment', [''])[0]
+                    "description": description
                 })
 
         # 按置信度降序排序
@@ -135,8 +139,9 @@ class ManufacturingReasoner:
             for equipment in self.onto.Equipment.instances():
                 for material in getattr(equipment, 'canProcess', []):
                     if isinstance(material, material_cls):
-                        label = (equipment.label.first()
-                                 if equipment.label else equipment.name)
+                        # equipment.label is a LocalizedStringList; use index access
+                        label_list = equipment.label
+                        label = label_list[0] if label_list else equipment.name
                         results.append(str(label))
                         break
         return results
