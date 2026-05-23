@@ -32,6 +32,9 @@ mfg:Material a rdfs:Class ;
 mfg:Process a rdfs:Class ;
     rdfs:label "工艺"@zh .
 
+mfg:WorkCell a rdfs:Class ;
+    rdfs:label "工作单元"@zh .
+
 # ==============================
 # 属性定义 (rdf:Property)
 # ==============================
@@ -71,3 +74,6 @@ mfg:Lathe_001 a mfg:Lathe ;
     rdfs:label "1号车床"@zh ;
     mfg:locatedIn mfg:WorkCell_A .
 # → 通过 rdfs:subClassOf 推理，可得 mfg:Lathe_001 a mfg:Equipment
+
+mfg:WorkCell_A a mfg:WorkCell ;
+    rdfs:label "A区工作单元"@zh .
