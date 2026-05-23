@@ -5,7 +5,11 @@
 // 实现核心能力问题（Competency Questions）的查询接口
 
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.*;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,9 +49,12 @@ public class QueryService {
 
         List<String> results = new ArrayList<>();
 
-        // 执行查询
-        try (QueryExecution qexec = QueryExecutionFactory
-                .create(sparql, model)) {
+        // 执行查询（使用Jena 4.x推荐的构建器API）
+        Query query = QueryFactory.create(sparql);
+        try (QueryExecution qexec = QueryExecution.create()
+                .query(query)
+                .model(model)
+                .build()) {
             ResultSet rs = qexec.execSelect();
             while (rs.hasNext()) {
                 QuerySolution soln = rs.nextSolution();
@@ -72,20 +79,27 @@ public class QueryService {
             "WHERE {\n" +
             "    ?equipment a :Equipment ;\n" +
             "               :hasStatus :Idle ;\n" +
-            "               rdfs:label ?name ;\n" +
-            "               :locatedIn ?workCell .\n" +
-            "    ?workCell rdfs:label ?location .\n" +
+            "               rdfs:label ?name .\n" +
+            "    OPTIONAL {\n" +
+            "        ?equipment :locatedIn ?workCell .\n" +
+            "        ?workCell rdfs:label ?location .\n" +
+            "    }\n" +
             "    FILTER(lang(?name) = \"zh\")\n" +
             "}";
 
         List<String> results = new ArrayList<>();
-        try (QueryExecution qexec = QueryExecutionFactory
-                .create(sparql, model)) {
+        Query query = QueryFactory.create(sparql);
+        try (QueryExecution qexec = QueryExecution.create()
+                .query(query)
+                .model(model)
+                .build()) {
             ResultSet rs = qexec.execSelect();
             while (rs.hasNext()) {
                 QuerySolution soln = rs.nextSolution();
                 String name = soln.getLiteral("name").getString();
-                String location = soln.getLiteral("location").getString();
+                String location = soln.contains("location")
+                    ? soln.getLiteral("location").getString()
+                    : "未知位置";
                 results.add(name + " @ " + location);
             }
         }
@@ -119,8 +133,11 @@ public class QueryService {
             "}";
 
         List<String> results = new ArrayList<>();
-        try (QueryExecution qexec = QueryExecutionFactory
-                .create(sparql, model)) {
+        Query query = QueryFactory.create(sparql);
+        try (QueryExecution qexec = QueryExecution.create()
+                .query(query)
+                .model(model)
+                .build()) {
             ResultSet rs = qexec.execSelect();
             while (rs.hasNext()) {
                 QuerySolution soln = rs.nextSolution();
