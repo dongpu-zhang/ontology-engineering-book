@@ -4,6 +4,13 @@
 # SWRL (Semantic Web Rule Language) 结合了OWL的类定义和规则推理
 # 语法：前件(Antecedent) → 后件(Consequent)
 # 多个原子之间用 ∧ (AND) 连接
+#
+# 注意：标准SWRL不支持规则体中的否定（¬）。
+# 能力冲突规则中的"设备无法加工"需借助外部DL-Safe规则扩展实现，
+# 或在应用层通过SPARQL查询辅助判断。
+# Note: Standard SWRL does not support negation-as-failure in rule bodies.
+# Capability conflict rules requiring "equipment cannot process" must be handled
+# via DL-Safe rule extensions or supplementary SPARQL queries at the application layer.
 
 # ==============================
 # 1. 基础推理规则
@@ -26,13 +33,6 @@
 # 2. 设备调度规则
 # ==============================
 
-# 规则：能力匹配检查 - 设备必须能加工所需材料
-# Rule: Capability matching - equipment must be able to process required material
-Task(?t) ∧ requiresMaterial(?t, ?m) ∧
-assignedTo(?t, ?e) ∧ Equipment(?e) ∧
-¬canProcess(?e, ?m)
-    → CapabilityConflict(?t)
-
 # 规则：状态冲突检查 - 正在运行的设备不能分配新任务
 # Rule: Status conflict - running equipment cannot be assigned new tasks
 Equipment(?e) ∧ hasStatus(?e, Running) ∧
@@ -41,20 +41,27 @@ Task(?t) ∧ assignedTo(?t, ?e)
 
 # 规则：时间冲突检查
 # Rule: Time conflict detection
+# 注：后件使用单变量类断言 TimeConflict(?t1)，SWRL类原子只接受单个参数
+# Note: The consequent uses a unary class assertion TimeConflict(?t1);
+#       SWRL class atoms take exactly one argument.
 Task(?t1) ∧ Task(?t2) ∧
 assignedTo(?t1, ?e) ∧ assignedTo(?t2, ?e) ∧
 hasStartTime(?t1, ?s1) ∧ hasEndTime(?t1, ?e1) ∧
 hasStartTime(?t2, ?s2) ∧ hasEndTime(?t2, ?e2) ∧
 swrlb:lessThan(?s1, ?e2) ∧
 swrlb:greaterThan(?e1, ?s2)
-    → TimeConflict(?t1, ?t2)
+    → TimeConflict(?t1)
 
 # 规则：长时间维护预警（超过24小时）
 # Rule: Long maintenance warning (over 24 hours)
+# 注：swrlb:add(?now, 86400, ?tomorrow) 中 ?now 需由外部提供或使用swrlb:currentTimeMillis等内置函数
+# Note: The built-in swrlb:add requires ?now to be bound. Use a dedicated temporal built-in
+#       or inject the current timestamp as an ABox fact before reasoning.
 Equipment(?e) ∧ hasStatus(?e, Maintenance) ∧
-hasEndTime(?e, ?end) ∧
-swrlb:add(?now, 86400, ?tomorrow) ∧
-swrlb:greaterThan(?end, ?tomorrow)
+hasMaintenanceStart(?e, ?start) ∧
+hasMaintenanceEnd(?e, ?end) ∧
+swrlb:subtract(?end, ?start, ?duration) ∧
+swrlb:greaterThan(?duration, 86400)
     → LongMaintenanceWarning(?e)
 
 # ==============================
@@ -118,3 +125,5 @@ swrlb:lessThan(?a, 1)
 # 多个原子之间用"∧"（AND）连接，表示"同时满足所有原子条件"
 # 变量用 ?variableName 格式表示
 # swrlb:* 是内置函数库（比较、计算、字符串操作等）
+# 类原子（Class atoms）只接受一个变量参数，如 ClassName(?x)
+# 属性原子（Property atoms）接受两个参数，如 propertyName(?x, ?y)
