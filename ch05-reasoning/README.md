@@ -1,4 +1,4 @@
-# 第4章：知识表示与推理机制 / Chapter 4: Knowledge Representation and Reasoning
+# 第5章：知识表示与推理机制 / Chapter 5: Knowledge Representation and Reasoning
 
 ## 本章内容
 

@@ -1,4 +1,4 @@
-# 第1章：本体论基础理论 / Chapter 1: Ontology Foundations
+# 第2章：本体论基础理论 / Chapter 2: Ontology Foundations
 
 ## 本章内容
 

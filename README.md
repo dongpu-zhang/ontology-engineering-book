@@ -13,15 +13,15 @@ reasoning mechanisms, and a full capstone case study on intelligent manufacturin
 
 ```
 ontology-engineering-book/
-├── ch01-ontology-foundations/     # 第1章：本体论基础理论
+├── ch02-ontology-foundations/     # 第2章：本体论基础理论
 │   └── examples/
-├── ch03-ontology-languages/       # 第3章：本体描述语言与工具
+├── ch04-ontology-languages/       # 第4章：本体描述语言与工具
 │   └── examples/
-├── ch04-reasoning/                # 第4章：知识表示与推理机制
+├── ch05-reasoning/                # 第5章：知识表示与推理机制
 │   └── examples/
-├── ch05-applications/             # 第5章：工程领域应用案例
+├── ch06-applications/             # 第6章：工程领域应用案例
 │   └── examples/
-└── ch08-capstone-manufacturing/   # 第8章：综合实战案例：智能制造知识管理系统
+└── ch09-capstone-manufacturing/   # 第9章：综合实战案例：智能制造知识管理系统
     └── src/
 ```
 
@@ -29,15 +29,15 @@ ontology-engineering-book/
 
 | 章节 | 内容 | 主要技术 |
 |------|------|----------|
-| Ch01 | 本体论基础理论 | 描述逻辑、SWRL规则、公理定义 |
-| Ch03 | 本体描述语言与工具 | RDF/Turtle、OWL、SPARQL、Protégé |
-| Ch04 | 知识表示与推理机制 | Tableau算法、SWRL、时态推理、概率推理 |
-| Ch05 | 工程领域应用案例 | 自动驾驶、BIM、航空航天FMEA |
-| Ch08 | 综合实战案例 | Java/Jena、Python/owlready2、OWL Manchester语法 |
+| Ch02 | 本体论基础理论 | 描述逻辑、SWRL规则、公理定义 |
+| Ch04 | 本体描述语言与工具 | RDF/Turtle、OWL、SPARQL、Protégé |
+| Ch05 | 知识表示与推理机制 | Tableau算法、SWRL、时态推理、概率推理 |
+| Ch06 | 工程领域应用案例 | 自动驾驶、BIM、航空航天FMEA |
+| Ch09 | 综合实战案例 | Java/Jena、Python/owlready2、OWL Manchester语法 |
 
 ## 如何使用 / How to Use
 
-### 运行Java代码 (Ch08)
+### 运行Java代码 (Ch09)
 需要 Apache Jena 依赖：
 ```xml
 <dependency>
@@ -47,7 +47,7 @@ ontology-engineering-book/
 </dependency>
 ```
 
-### 运行Python代码 (Ch08)
+### 运行Python代码 (Ch09)
 ```bash
 pip install owlready2
 python src/reasoner.py

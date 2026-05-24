@@ -1,5 +1,5 @@
-# 第8章：综合实战案例：智能制造知识管理系统
-# Chapter 8: Capstone - Intelligent Manufacturing Knowledge Management System
+# 第9章：综合实战案例：智能制造知识管理系统
+# Chapter 9: Capstone - Intelligent Manufacturing Knowledge Management System
 
 ## 项目概述
 
